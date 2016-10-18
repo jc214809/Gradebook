@@ -36,30 +36,27 @@ function to_json(workbook) {
     classes: []
   };
   workbook.SheetNames.forEach(function(sheetName) {
-  	var obj = {};
-  	obj[sheetName] =get_student_data(workbook, sheetName);
+    var obj = {};
+    obj[sheetName] = get_student_data(workbook, sheetName);
     viewData.classes.push(obj);
-    //viewData.classes[sheetName] = [];
   });
   console.dir(viewData);
   return viewData;
+}
 
-}
 function get_student_data(workbook, sheetName) {
-	 var result = {};
-	var students = [];
-	var roa = X.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
-    if (roa.length > 0) {
-      result[sheetName] = roa;
-      for (var i = 0; i < result[sheetName].length; i++) {
-        students.push({
-          'StudentName': result[sheetName][i].Name,
-          'Assignments': result[sheetName][i]
-        });
-        delete students[i]['Assignments'].Name;
-        //viewData.classes[sheetName][i]['Assignments'] = result[sheetName][i];
-      }
+  var result = {};
+  var students = [];
+  var roa = X.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+  if (roa.length > 0) {
+    result[sheetName] = roa;
+    for (var i = 0; i < result[sheetName].length; i++) {
+      students.push({
+        'StudentName': result[sheetName][i].Name,
+        'Assignments': result[sheetName][i]
+      });
+      delete students[i]['Assignments'].Name;
     }
-    return students;
+  }
+  return students;
 }
-//if (a.addEventListener) a.addEventListener('change', handleFile, false);
