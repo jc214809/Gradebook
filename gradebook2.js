@@ -16,7 +16,7 @@ function handleFile(e) {
     var wb;
     var arr = fixdata(data);
     wb = X.read(btoa(arr), { type: 'base64' });
-    $("#my_file_output").html(to_json(wb), 2, 2);
+    $("#my_file_output").html(JSON.stringify(to_json(wb), 2, 2));
   }
   reader.readAsArrayBuffer(f);
 }
@@ -32,27 +32,34 @@ function fixdata(data) {
 
 function to_json(workbook) {
   var viewData = {};
-  var result = {};
+  viewData = {
+    classes: []
+  };
   workbook.SheetNames.forEach(function(sheetName) {
-    var roa = X.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
-    if (roa.length > 0) {
-      viewData = {
-        classes: []
-      };
-      result[sheetName] = roa;
-      //viewData.classes.push({});
-      viewData.classes[sheetName] = [];
-      for (var i = 0; i < result[sheetName].length; i++) {
-        viewData.classes[sheetName].push({});
-        viewData.classes[sheetName][i]['StudentName'] = result[sheetName][i].Name;
-        delete result[sheetName][i].Name;
-        viewData.classes[sheetName][i]['Assignments'] = result[sheetName][i];
-      }
-    }
+  	var obj = {};
+  	obj[sheetName] =get_student_data(workbook, sheetName);
+    viewData.classes.push(obj);
+    //viewData.classes[sheetName] = [];
   });
   console.dir(viewData);
   return viewData;
 
 }
-
+function get_student_data(workbook, sheetName) {
+	 var result = {};
+	var students = [];
+	var roa = X.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+    if (roa.length > 0) {
+      result[sheetName] = roa;
+      for (var i = 0; i < result[sheetName].length; i++) {
+        students.push({
+          'StudentName': result[sheetName][i].Name,
+          'Assignments': result[sheetName][i]
+        });
+        delete students[i]['Assignments'].Name;
+        //viewData.classes[sheetName][i]['Assignments'] = result[sheetName][i];
+      }
+    }
+    return students;
+}
 //if (a.addEventListener) a.addEventListener('change', handleFile, false);
